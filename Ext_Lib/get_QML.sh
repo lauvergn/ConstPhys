@@ -15,7 +15,7 @@ rm -rf $BaseName* #always remove the link
 
 #latest release
 #latest HEAD version (dev version)
- version=https://github.com/lauvergn/QuantumModelLib/archive/refs/tags/v20.1-dev.zip
+ version=https://github.com/lauvergn/QuantumModelLib/archive/refs/tags/v20.2-dev.zip
 
 
 test -z $EXTLIB_TYPE       &&    curl -LJ $version --output $LOC_version.zip

@@ -6,3 +6,4 @@ obj/*
 res
 TESTS/*log
 TESTS/res*
+TESTS/Xres*
