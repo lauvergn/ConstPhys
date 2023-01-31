@@ -2,14 +2,16 @@
 
 EXTLIB_TYPE=$1
 
-echo "In get_dnSVM.sh"
+BaseName=AD_dnSVM
+
+echo "In get_"$BaseName".sh"
 
 
-SAVE_version=Save_AD_dnSVM-3.2
-LOC_version=AD_dnSVM
+SAVE_version="Save_"$BaseName"_devloc"
+LOC_version=$BaseName
 
 
-rm -rf AD_dnSVM* #always remove the link
+rm -rf $BaseName* #always remove the link
 
 
 #latest release
@@ -26,9 +28,9 @@ unzip $LOC_version.zip
 rm -f $LOC_version.zip
 
 
-LIBDIR=`ls -d AD_dnSVM*`
+LIBDIR=`ls -d $BaseName*`
 #echo $LIBDIR
 
 ln -s $LIBDIR $LOC_version
 
-echo "End get_dnSVM.sh"
+echo "End get_"$BaseName".sh"
