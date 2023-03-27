@@ -78,28 +78,16 @@ CPPSHELL = -D__PHYSCTEPATH="'$(PhysCte_path)'"
 #===============================================================================
 #
 #===============================================================================
-# external lib (QML, AD_dnSVM ...)
+# external lib (QDUtil)
 ifeq ($(ExtLibDIR),)
   ExtLibDIR := $(PhysCte_path)/Ext_Lib
 endif
-
-QML_DIR    = $(ExtLibDIR)/QuantumModelLib
-QMLMOD_DIR = $(QML_DIR)/OBJ/obj$(extlib_obj)
-QMLLIBA    = $(QML_DIR)/libQMLib$(extlib_obj).a
-
-AD_DIR    = $(ExtLibDIR)/AD_dnSVM
-ADMOD_DIR = $(AD_DIR)/OBJ/obj$(extlib_obj)
-ADLIBA    = $(AD_DIR)/libAD_dnSVM$(extlib_obj).a
 
 QD_DIR    = $(ExtLibDIR)/QDUtilLib
 QDMOD_DIR = $(QD_DIR)/OBJ/obj$(extlib_obj)
 QDLIBA    = $(QD_DIR)/libQD$(extlib_obj).a
 
-FOREVRT_DIR    = $(ExtLibDIR)/FOR_EVRT
-FOREVRTMOD_DIR = $(FOREVRT_DIR)/obj/obj$(extlibwi_obj)
-FOREVRTLIBA    = $(FOREVRT_DIR)/libFOR_EVRT$(extlibwi_obj).a
-
-EXTLib     = $(FOREVRTLIBA) $(QDLIBA)
+EXTLib     = $(QDLIBA)
 #===============================================================================
 #===============================================================================
 #===============================================================================
@@ -131,7 +119,7 @@ ifeq ($(F90),$(filter $(F90),gfortran gfortran-8))
   FFLAGS +=-J$(MOD_DIR)
 
   # where to look the .mod files
-  FFLAGS += -I$(FOREVRTMOD_DIR) -I$(QDMOD_DIR)
+  FFLAGS += -I$(QDMOD_DIR)
 
   # some cpreprocessing
   FFLAGS += -cpp $(CPPSHELL)
@@ -253,31 +241,13 @@ BaseName := ConstPhys
 .PHONY: zip
 zip: cleanall
 	test -d $(ExtLibSAVEDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	cd $(ExtLibSAVEDIR) ; rm -rf $(BaseName)_devloc
-	mkdir $(ExtLibSAVEDIR)/$(BaseName)_devloc
-	cp -r * $(ExtLibSAVEDIR)/$(BaseName)_devloc
-	cd $(ExtLibSAVEDIR) ; zip -r Save_$(BaseName)_devloc.zip $(BaseName)_devloc
-	cd $(ExtLibSAVEDIR) ; rm -rf $(BaseName)_devloc
+	$(ExtLibSAVEDIR)/makezip.sh $(BaseName)
 	cd $(ExtLibSAVEDIR) ; ./cp_ConstPhys.sh
 	@echo "  done zip"
 #===============================================
 #=== external libraries ========================
-# AD_dnSVM + QML Lib
+# QDUtil
 #===============================================
-#
-$(QMLLIBA):
-	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	@test -d $(QML_DIR) || (cd $(ExtLibDIR) ; ./get_QML.sh $(EXTLIB_TYPE))
-	@test -d $(QML_DIR) || (echo $(QML_DIR) "does not exist" ; exit 1)
-	cd $(QML_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) ExtLibDIR=$(ExtLibDIR)
-	@echo "  done " $(QDLIBA) " in "$(BaseName)
-#
-$(ADLIBA):
-	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	@test -d $(AD_DIR) || (cd $(ExtLibDIR) ; ./get_dnSVM.sh  $(EXTLIB_TYPE))
-	@test -d $(AD_DIR) || (echo $(AD_DIR) "does not exist" ; exit 1)
-	cd $(AD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) ExtLibDIR=$(ExtLibDIR)
-	@echo "  done " $(AD_DIR) " in "$(BaseName)
 #
 $(QDLIBA):
 	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
@@ -286,12 +256,6 @@ $(QDLIBA):
 	cd $(QD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) ExtLibDIR=$(ExtLibDIR)
 	@echo "  done " $(QDLIBA) " in "$(BaseName)
 #
-$(FOREVRTLIBA):
-	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	@test -d $(FOREVRT_DIR) || (cd $(ExtLibDIR) ; ./get_FOR_EVRT.sh $(EXTLIB_TYPE))
-	@test -d $(FOREVRT_DIR) || (echo $(FOREVRT_DIR) "does not exist" ; exit 1)
-	cd $(FOREVRT_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) ExtLibDIR=$(ExtLibDIR) INT=$(INT)
-	@echo "  done " $(FOREVRTLIBA) " in "$(BaseName)
 ##
 .PHONY: clean_extlib
 clean_extlib:
@@ -332,7 +296,7 @@ ifeq ($(FFC),ifort)
   FFLAGS += -cpp $(CPPSHELL_QML)
 
   # where to look the .mod files
-  FFLAGS += -I$(FOREVRTMOD_DIR) -I$(QDMOD_DIR)
+  FFLAGS += -I$(QDMOD_DIR)
 
   FLIB    = $(EXTLib)
   ifeq ($(LLAPACK),1)
