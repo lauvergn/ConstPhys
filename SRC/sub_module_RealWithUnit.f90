@@ -60,10 +60,13 @@
     PUBLIC :: dealloc_TabConvRWU, dealloc_TabConvRWU_dim1, Write_TabConvRWU, Write_TabConvRWU_dim1
     PUBLIC :: ADD_RWU_TO_TabConvRWU, ADD_RWU_TO_Tab_conv_FOR_quantity
     PUBLIC :: convRWU_TO_R,convRWU_TO_R_WITH_WorkingUnit,convRWU_TO_R_WITH_WritingUnit,convRWU_TO_RWU
-    PUBLIC :: RWU_Write,RWU_WriteUnit
+    PUBLIC :: RWU_Write,RWU_WriteUnit,TO_string
     PUBLIC :: get_Conv_au_TO_WriteUnit,get_Conv_au_TO_Unit,get_val_FROM_RWU
     PUBLIC :: Test_RWU
 
+    INTERFACE TO_string
+      MODULE PROCEDURE RWU_TO_string
+    END INTERFACE
 
   CONTAINS
   ELEMENTAL SUBROUTINE RWU2_TO_R1(R1,RWU2)
@@ -161,11 +164,11 @@
 
     write(out_unitp,*) "======================================"
     write(out_unitp,*) "quantity:   ",TabConvRWU%quantity
-    write(out_unitp,*) "Work_unit:  ",TabConvRWU%Work_unit
-    write(out_unitp,*) "Write_unit: ",TabConvRWU%Write_unit
+    write(out_unitp,*) "Work_unit:  ",TO_string(TabConvRWU%Work_unit)
+    write(out_unitp,*) "Write_unit: ",TO_string(TabConvRWU%Write_unit)
     IF (allocated(TabConvRWU%conv)) THEN
       DO i=1,size(TabConvRWU%conv)
-        write(out_unitp,*) "conv(i):  ",i,TabConvRWU%conv(i)
+        write(out_unitp,*) "conv(i):  ",i,' ' // TO_string(TabConvRWU%conv(i))
       END DO
     END IF
     write(out_unitp,*) "======================================"
@@ -476,6 +479,14 @@
 
   END FUNCTION convRWU_TO_RWU
 
+  FUNCTION RWU_TO_string(RWU)
+    character (len=:), allocatable  :: RWU_TO_string
+    TYPE(REAL_WU), intent(in)       :: RWU
+
+    RWU_TO_string = TO_string(RWU%val) // ' ' // trim(RWU%unit) // ' ' // trim(RWU%quantity)
+
+  END function RWU_TO_string
+
   FUNCTION RWU_Write(RWU,WithUnit,WorkingUnit)
     character (len=:), allocatable  :: RWU_Write
     TYPE(REAL_WU), intent(in)       :: RWU
@@ -679,7 +690,6 @@
 
     CALL Write_TabConvRWU_dim1(Tab_conv_FOR_quantity)
 
-
     DO iq=1,size(Tab_conv_FOR_quantity)
       write(out_unitp,*) "======================================"
       write(out_unitp,*) "======================================"
@@ -691,26 +701,26 @@
 
         RWU1 = REAL_WU(ONE,Tab_conv_FOR_quantity(iq)%conv(i)%unit,Tab_conv_FOR_quantity(iq)%quantity)
 
-        write(out_unitp,*) 'test RWU (without conv): ',RWU1
+        write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
         write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
         write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
         write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
         write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
         RWU2 = convRWU_TO_RWU(RWU1)
-        write(out_unitp,*) 'test RWU (after conv, working unit default) :',RWU2
+        write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
         RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-        write(out_unitp,*) 'test RWU (after conv, working unit)         :',RWU2
+        write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
         RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-        write(out_unitp,*) 'test RWU (after conv, writing unit)         :',RWU2
+        write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
         Rval = convRWU_TO_R(RWU1)
-        write(out_unitp,*) 'test Rval (after conv, working unit default):',Rval
+        write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
         Rval = RWU1
         write(out_unitp,*) 'test Rval (after conv, = default):           ',Rval
         Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-        write(out_unitp,*) 'test Rval (after conv, working unit)        :',Rval
+        write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
         Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-        write(out_unitp,*) 'test Rval (after conv, writing unit)        :',Rval
+        write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
 
         write(out_unitp,*) "======================================"
         flush(out_unitp)
@@ -726,26 +736,26 @@
 
     RWU1 = REAL_WU(ONE,'xx','E')
 
-    write(out_unitp,*) 'test RWU (without conv): ',RWU1
+    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default):',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
     write(out_unitp,*) 'test Rval (after conv, = default):           ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        :',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test Rval (after conv, writing unit)        :',Rval
+    write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
 
     write(out_unitp,*) "======================================"
     flush(out_unitp)
@@ -759,26 +769,26 @@
 
     RWU1 = REAL_WU(ONE,'au','x')
 
-    write(out_unitp,*) 'test RWU (without conv): ',RWU1
+    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default):',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
-    write(out_unitp,*) 'test Rval (after conv, = default):           ',Rval
+    write(out_unitp,*) 'test Rval (after conv, = default):            ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        :',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test Rval (after conv, writing unit)        :',Rval
+    write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
 
     write(out_unitp,*) "======================================"
     flush(out_unitp)
@@ -789,24 +799,24 @@
 
     RWU1 = REAL_WU(ONE,'au','e')
 
-    write(out_unitp,*) 'test RWU (without conv): ',RWU1
+    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default):',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
-    write(out_unitp,*) 'test Rval (after conv, = default):           ',Rval
+    write(out_unitp,*) 'test Rval (after conv, = default):            ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        :',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
     write(out_unitp,*) 'test Rval (after conv, writing unit)        :',Rval
 
@@ -818,26 +828,26 @@
 
     RWU1 = REAL_WU(ONE,'ANGS','l')
 
-    write(out_unitp,*) 'test RWU (without conv): ',RWU1
+    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
     write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         :',RWU2
+    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default):',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
-    write(out_unitp,*) 'test Rval (after conv, = default):           ',Rval
+    write(out_unitp,*) 'test Rval (after conv, = default):            ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        :',Rval
+    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test Rval (after conv, writing unit)        :',Rval
+    write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
 
     write(out_unitp,*) "======================================"
     flush(out_unitp)
