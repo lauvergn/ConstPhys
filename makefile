@@ -94,7 +94,7 @@ EXTLib     = $(QDLIBA)
 # gfortran (osx and linux)
 #ifeq ($(F90),gfortran)
 #===============================================================================
-ifeq ($(F90),$(filter $(F90),gfortran gfortran-8))
+ifeq ($(FFC),gfortran)
 
   # opt management
   ifeq ($(OOPT),1)
@@ -152,14 +152,13 @@ endif
 #=================================================================================
 # ifort compillation v17 v18 with mkl
 #=================================================================================
-ifeq ($(FFC),ifort)
+ifeq ($(FFC),$(filter $(FFC),ifort ifx))
 
   # opt management
   ifeq ($(OOPT),1)
-      #F90FLAGS = -O -parallel -g -traceback
-      FFLAGS = -O  -g -traceback -heap-arrays
+    FFLAGS = -O  -g -traceback -heap-arrays
   else
-      FFLAGS = -O0 -check all -g -traceback
+    FFLAGS = -O0 -check all -g -traceback
   endif
 
   # integer kind management
@@ -172,7 +171,11 @@ ifeq ($(FFC),ifort)
 
   # omp management
   ifeq ($(OOMP),1)
-    FFLAGS += -qopenmp
+    ifeq ($(FFC),ifort)
+      FFLAGS += -qopenmp -parallel
+    else # ifx
+      FFLAGS += -qopenmp
+    endif
   endif
 
   # where to look the .mod files
@@ -185,11 +188,12 @@ ifeq ($(FFC),ifort)
   endif
 
   FLIB    = $(EXTLib)
-  ifeq ($(LLAPACK),1)
-    #FLIB += -mkl -lpthread
+  ifneq ($(LLAPACK),0)
+    ifeq ($(FFC),ifort)
+      FLIB += -mkl -lpthread
+    else # ifx
     FLIB += -qmkl -lpthread
-    #FLIB +=  ${MKLROOT}/lib/libmkl_blas95_ilp64.a ${MKLROOT}/lib/libmkl_lapack95_ilp64.a ${MKLROOT}/lib/libmkl_intel_ilp64.a \
-    #         ${MKLROOT}/lib/libmkl_intel_thread.a ${MKLROOT}/lib/libmkl_core.a -liomp5 -lpthread -lm -ldl
+    endif
   else
     FLIB += -lpthread
   endif

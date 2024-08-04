@@ -167,8 +167,11 @@ MODULE mod_Constant
 !> Subroutine: Initializes the physical constants, conversion factors and masses
 !> \author David Lauvergnt
 !> \date 29/11/2018
-!! \param const_phys  derived type with the physical constants, conversion factors and masses
-!! \param Read_Namelist an optional logical flag to be able to read the namelist "constantes"
+!! \param const_phys    : derived type with the physical constants, conversion factors and masses
+!! \param Read_Namelist : an optional logical flag to be able to read the namelist "constantes"
+!! \param version       : Physical constant version: [PUBLI2001, HANDBOOK70ED, CODATA2006*, CODATA2014, CODATA2018]
+!! \param mass_version  : Isotopic mass version: [HANDBOOK70ED, NIST2012*, NIST2018]
+!! \param iprint        : 
 !
   SUBROUTINE sub_constantes(const_phys,Read_Namelist,version,mass_version,iprint)
   IMPLICIT NONE
