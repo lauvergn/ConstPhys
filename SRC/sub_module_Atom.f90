@@ -723,7 +723,8 @@ PRIVATE
     integer,           intent(inout), optional :: Z !< number of electrons
     integer,           intent(inout), optional :: A !< number of nucleons
     integer,           intent(inout), optional :: err_mass !< to handle error (err_mass=0 => no error)
-    character (len=*), intent(in),    optional :: name !< string which contains the mass (a real), the atomic symbol, or "Z_A" or "A"symbol
+    character (len=*), intent(in),    optional :: name !< string which contains:
+                                                       ! the mass (a real), the atomic symbol, or "Z_A" or "A"symbol
     TYPE (table_atom), intent(in)              :: mendeleev !< table of derived type "atom" with the known isotopes
 
     integer                         :: err_mass_loc

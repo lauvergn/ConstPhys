@@ -81,7 +81,8 @@ MODULE mod_Constant
    real (kind=Rkind) :: E0               !<  Conversion factor of an electric field in au to N m-1
    real (kind=Rkind) :: I0               !<  Conversion factor a plane wave intensity in au to W m-2
 
-   real (kind=Rkind) :: convAif          !<  Conversion factor (Einstein coefficient, A) for Spontaneous emission: au to s-1 facteur de convertion pour le coef d'Einstein Aif
+   real (kind=Rkind) :: convAif          !<  Conversion factor (Einstein coefficient, A) for Spontaneous emission: 
+                                         !au to s-1 facteur de convertion pour le coef d'Einstein Aif
    real (kind=Rkind) :: convIDif         !<  Conversion factor for the electric-dipolar intenisties: au to m.mol-1
    real (kind=Rkind) :: convIQif         !<  Conversion factor for the electric-quadripolar intenisties: au to ???
 
