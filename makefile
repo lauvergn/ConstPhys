@@ -56,12 +56,12 @@ OS :=$(shell uname)
 MAIN_path:= $(shell pwd)
 
 # Extension for the object directory and the library
+ext_obj:=_$(FFC)_opt$(OOPT)_omp$(OOMP)_lapack$(LLAPACK)_int$(INT)
 ifeq ($(FFC),mpifort)
   extlibwi_obj:=_$(FFC)_$(MPICORE)_opt$(OOPT)_omp$(OOMP)_lapack$(LLAPACK)_int$(INT)
 else
-  extlibwi_obj:=_$(FFC)_opt$(OOPT)_omp$(OOMP)_lapack$(LLAPACK)_int$(INT)
+  extlibwi_obj:=$(ext_obj)
 endif
-extlib_obj:=_$(FFC)_opt$(OOPT)_omp$(OOMP)_lapack$(LLAPACK)_int$(INT)
 
 
 
@@ -74,18 +74,19 @@ MOD_DIR=$(OBJ_DIR)
 LIBA=libPhysConst$(extlibwi_obj).a
 #===============================================================================
 #
-#===============================================================================
-# external lib (QDUtil)
+#=================================================================================
+# External Libraries directory
 ifeq ($(ExtLibDIR),)
   ExtLibDIR := $(MAIN_path)/Ext_Lib
 endif
+$(shell [ -d $(ExtLibDIR) ] || (echo $(ExtLibDIR) "does not exist" ; exit 1))
 
-QD_DIR    = $(ExtLibDIR)/QDUtilLib
-QDMOD_DIR = $(QD_DIR)/OBJ/obj$(extlib_obj)
-QDLIBA    = $(QD_DIR)/libQD$(extlib_obj).a
-
-EXTMod     = -I$(QDMOD_DIR)
+QD_DIR            = $(ExtLibDIR)/QDUtilLib
+QDMOD_DIR         = $(QD_DIR)/OBJ/obj$(ext_obj)
+QDLIBA            = $(QD_DIR)/libQD$(ext_obj).a
+#===============================================================================
 EXTLib     = $(QDLIBA)
+EXTMod     = -I$(QDMOD_DIR)
 #===============================================================================
 #=================================================================================
 # To deal with external compilers.mk file
@@ -109,7 +110,8 @@ $(info ***********COMPILED with:    $(MPICORE))
 endif
 $(info ***********OpenMP:           $(OOMP))
 $(info ***********Lapack:           $(LLAPACK))
-$(info ***********FLIB:             $(FLIB))
+$(info ***********EXTLib:           $(EXTLib))
+$(info ***********LIBA:             $(LIBA))
 $(info ************************************************************************)
 $(info ************************************************************************)
 
@@ -136,7 +138,7 @@ $(info ************ OBJ: $(OBJ))
 PhysConst: $(PhysConstEXE)
 	@echo "Physical Constants OK"
 #
-$(PhysConstEXE): $(LIBA) $(OBJ_DIR)/$(PhysConstMAIN).o
+$(PhysConstEXE): $(EXTLib) $(OBJ_DIR)/$(PhysConstMAIN).o
 	$(FFC) $(FFLAGS) -o $(PhysConstEXE) $(OBJ_DIR)/$(PhysConstMAIN).o $(LIBA) $(EXTLib) $(FLIB)
 #
 .PHONY: ut UT UT_PhysConst ut_physconst
@@ -173,12 +175,14 @@ $(OBJ_DIR)/%.o: %.f90
 clean: clean_UT
 	rm -f $(OBJ_DIR)/*/*.o $(OBJ_DIR)/*.o
 	rm -f *.log TESTS/Xres_UT_PhysConst
+	rm -f res*
 	@echo "  done cleaning"
 
-cleanall : clean clean_extlib
+cleanall : clean
 	rm -fr OBJ/obj* OBJ/*mod build
 	rm -f lib*.a
 	rm -f *.exe
+	cd $(MAIN_path)/Ext_Lib ; ./cleanlib
 	rm -f TESTS/res* TESTS/*log
 	@echo "  done all cleaning"
 #===============================================
@@ -192,27 +196,24 @@ zip: cleanall
 	cd $(ExtLibSAVEDIR) ; ./cp_ConstPhys.sh
 	@echo "  done zip"
 #===============================================
-#=== external libraries ========================
-# QDUtil
 #===============================================
+#== external libraries
 #
-$(QDLIBA):
-	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	@test -d $(QD_DIR) || (cd $(ExtLibDIR) ; ./get_QDUtilLib.sh $(EXTLIB_TYPE))
-	@test -d $(QD_DIR) || (echo $(QD_DIR) "does not exist" ; exit 1)
-	cd $(QD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
-	@echo "  done " $(QDLIBA) " in "$(BaseName)
+.PHONY: getlib
+getlib:
+	cd $(ExtLibDIR) ; ./get_Lib.sh QDUtilLib dev
 #
-##
-.PHONY: clean_extlib
-clean_extlib:
-	cd $(ExtLibDIR) ; ./cleanlib
+$(QDLIBA): getlib
+	cd $(ExtLibDIR)/QDUtilLib ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
+	@test -f $(QDLIBA) || (echo $(QDLIBA) "does not exist" ; exit 1)
+	@echo "  done " $(QDLIBA)
+#
 #=======================================================================================
 #=======================================================================================
 #add dependencies
-$(OBJ):                               $(EXTLib)
+$(OBJ):                               | $(EXTLib)
 
 $(OBJ_DIR)/$(sub_module_Atom).o:      $(OBJ_DIR)/$(sub_module_RealWithUnit).o
 $(OBJ_DIR)/$(sub_module_constant).o:  $(OBJ_DIR)/$(sub_module_Atom).o $(OBJ_DIR)/$(sub_module_RealWithUnit).o
 
-$(OBJ_DIR)/$(PhysConstMAIN).o:        $(OBJ)
+$(OBJ_DIR)/$(PhysConstMAIN).o:        $(LIBA)

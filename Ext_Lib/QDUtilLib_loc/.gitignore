@@ -1,9 +1,10 @@
 .DS_Store */.DS_Store */*/.DS_Store
-obj/*
-*.exe
+OBJ/*
+*.x
 *.a 
 *.log
-res*
+res
+test_io_file.txt
 TESTS/*log
 TESTS/res*
-TESTS/Xres*
+file.*
