@@ -175,6 +175,7 @@ $(OBJ_DIR)/%.o: %.f90
 clean: clean_UT
 	rm -f $(OBJ_DIR)/*/*.o $(OBJ_DIR)/*.o
 	rm -f *.log TESTS/Xres_UT_PhysConst
+	rm -f res*
 	@echo "  done cleaning"
 
 cleanall : clean

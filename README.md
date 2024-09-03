@@ -8,19 +8,11 @@ masses). Several versions can be selected:
 - **CODATA 2018**: downloaded from `NIST <https://physics.nist.gov/cuu/Constants/index.html>` (acces 29/01/2023).
 - **Handbook 70ED**: Constants and masses from the 70th edition of the Handbook of Chemistry and Physics.
 
-Furthermore, several version of atomic isotopic masses can be selected:
-
-- and the NIST
-  `masses <https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions-relative-atomic-masses>` downloaded in
-  2012.
-
+Furthermore, several version of atomic isotopic masses can be selected (Handbook 70ED, NIST2012, NIST2018).
+The NIST ones can be obtained: `masses <https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions-relative-atomic-masses>`
 
 
 From these fundamental constants, some conversion factors are calculated automatically and can be used easily.
-
-Remark: the actual mass values of the NIST web page differ slightly from the module ones.
-General quantum dynamics code using curvilinear coordinates:
-
 
 ## 1) &constantes namelist
 
@@ -55,3 +47,49 @@ The following parameters can be use to modify some physical constants (to reprod
 
 * **auTOcm_inv** : This parameter enables to modify energy conversion factor to **"cm-1"**. It has an effect only if **ene_unit="cm-1"**.
 * **inv_Name** : This parameter enables to modify mass conversion factor (au <=> g.mol-1).
+
+## 2) Installation
+
+### 2a) With a makefile
+
+   From the ConstPhys directory, when make is executated, the **libPhysConst_XXX_optx_ompy_lapakz.a** must be created (ex: **libPhysConst_gfortran_opt1_omp1_lapack1**).
+   **XXX** is the compiler name and **x**, **y** and **z** are 0/1 when flags are turn off/on. 
+   They correspond to OPT (compiler optimzation), OpenMP and Lapack/blas, respectively.
+
+```
+   This version works with:
+       gfortran 9.0 (linux and macOS)
+       ifort/ifx
+```
+
+To link the library to your program, you have two main possiblities:
+
+- When lapack/blas are not needed:
+
+```bash
+   gfortran ....   $ConstPhysLib_path/libConstPhysLib_XXX_optx_ompy_lapak0.a Ext_Lib/QDUtilLib/libQD_XXX_optx_ompy_lapak0.a
+```
+
+- When lapack/blas are needed
+
+```bash
+   gfortran ....   $ConstPhysLib_path/libConstPhysLib_XXX_optx_ompy_lapak0.a Ext_Lib/QDUtilLib/libQD_XXX_optx_ompy_lapak0.a -llapack -lblas
+```
+
+*ConstPhysLib_path* contains the path of the **ConstPhys**
+
+### 2a) With fpm
+
+- Installation:
+
+```bash
+  fpm build
+```
+
+- Run tests:
+
+```bash
+  fpm test  --< TESTS/dat_PhysConst_HandBook70ed --> res_HandBook70ed
+  fpm test  --< TESTS/dat_PhysConst_NIST2012 --> res_NIST2012
+  fpm test  --< TESTS/dat_PhysConst_NIST2018 --> res_NIST2018
+```

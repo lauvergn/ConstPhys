@@ -3,7 +3,7 @@ obj/*
 *.exe
 *.a 
 *.log
-res
+res*
 TESTS/*log
 TESTS/res*
 TESTS/Xres*
