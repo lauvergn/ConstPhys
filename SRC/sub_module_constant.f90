@@ -175,7 +175,8 @@ MODULE mod_Constant
 !! \param iprint        : 
 !
   SUBROUTINE sub_constantes(const_phys,Read_Namelist,version,mass_version,iprint)
-  IMPLICIT NONE
+    USE ConstPhys_Util_m
+    IMPLICIT NONE
 
   TYPE (constant),         intent(inout)            :: const_phys
   logical,                 intent(in),    optional  :: Read_Namelist
@@ -229,11 +230,7 @@ MODULE mod_Constant
 !-----------------------------------------------------------------
   const_phys%constant_done = .TRUE.
 
-#if defined(__PHYSCTEPATH)
-  PhysCte_path =  __PHYSCTEPATH
-#else
-  PhysCte_path = '~/'
-#endif
+  CALL check_ConstPhys_Path()
 
   IF (present(Read_Namelist)) THEN
     Read_Namelist_loc = Read_Namelist
