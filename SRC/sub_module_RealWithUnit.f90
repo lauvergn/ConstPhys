@@ -27,7 +27,7 @@
 !===============================================================================
 !===============================================================================
   MODULE mod_RealWithUnit
-  USE QDUtil_m, out_unitp => out_unit
+  USE QDUtil_m
   IMPLICIT NONE
 
   PRIVATE
@@ -162,16 +162,16 @@
 
     integer :: i
 
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "quantity:   ",TabConvRWU%quantity
-    write(out_unitp,*) "Work_unit:  ",TO_string(TabConvRWU%Work_unit)
-    write(out_unitp,*) "Write_unit: ",TO_string(TabConvRWU%Write_unit)
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "quantity:   ",TabConvRWU%quantity
+    write(out_unit,*) "Work_unit:  ",TO_string(TabConvRWU%Work_unit)
+    write(out_unit,*) "Write_unit: ",TO_string(TabConvRWU%Write_unit)
     IF (allocated(TabConvRWU%conv)) THEN
       DO i=1,size(TabConvRWU%conv)
-        write(out_unitp,*) "conv(i):  ",i,' ' // TO_string(TabConvRWU%conv(i))
+        write(out_unit,*) "conv(i):  ",i,' ' // TO_string(TabConvRWU%conv(i))
       END DO
     END IF
-    write(out_unitp,*) "======================================"
+    write(out_unit,*) "======================================"
 
   END SUBROUTINE Write_TabConvRWU
 
@@ -219,10 +219,10 @@
     CALL string_uppercase_TO_lowercase(name_quantity)
 
     IF (name_quantity /= name_RWUquantity) THEN
-      write(out_unitp,*) ' ERROR in ADD_RWU_TO_TabConvRWU'
-      write(out_unitp,*) ' quantities of RWU and TabConvRWU are different!'
-      write(out_unitp,*) ' RWU%quantity:        ',RWU%quantity
-      write(out_unitp,*) ' TabConvRWU%quantity: ',TabConvRWU%quantity
+      write(out_unit,*) ' ERROR in ADD_RWU_TO_TabConvRWU'
+      write(out_unit,*) ' quantities of RWU and TabConvRWU are different!'
+      write(out_unit,*) ' RWU%quantity:        ',RWU%quantity
+      write(out_unit,*) ' TabConvRWU%quantity: ',TabConvRWU%quantity
       STOP 'ERROR in ADD_RWU_TO_TabConvRWU: quantities of RWU and TabConvRWU are different!'
     END IF
 
@@ -248,7 +248,7 @@
         deallocate(name_unit)
 
         IF (unit_present) THEN
-          IF(Write_Warning_loc) write(out_unitp,*) 'The unit "',trim(adjustl(RWU%unit)),      &
+          IF(Write_Warning_loc) write(out_unit,*) 'The unit "',trim(adjustl(RWU%unit)),      &
                                            '" is already present'
           EXIT
         END IF
@@ -437,14 +437,14 @@
 
     skip_conv = (RWU%val == huge(ONE) .OR. RWU%val == -huge(ONE))
 
-    !write(out_unitp,*) 'RWU',RWU,skip_conv
+    !write(out_unit,*) 'RWU',RWU,skip_conv
 
     ! first find the quantity
     iq = get_Index_OF_Quantity(RWU%quantity)
 
     name_RWUunit = RWU%unit
     CALL string_uppercase_TO_lowercase(name_RWUunit)
-    !write(out_unitp,*) 'name_RWUunit',name_RWUunit
+    !write(out_unit,*) 'name_RWUunit',name_RWUunit
 
     IF (iq <= size(Tab_conv_FOR_quantity)) THEN
       ! modify quantity to have the correct case
@@ -456,7 +456,7 @@
         name_unit = Tab_conv_FOR_quantity(iq)%conv(i)%unit
         CALL string_uppercase_TO_lowercase(name_unit)
 
-        !write(out_unitp,*) 'i,name_unit',i,name_unit,name_RWUunit,(name_RWUunit == name_unit)
+        !write(out_unit,*) 'i,name_unit',i,name_unit,name_RWUunit,(name_RWUunit == name_unit)
 
         IF (name_RWUunit == name_unit) THEN
           IF (WorkingUnit_loc) THEN ! working unit
@@ -475,7 +475,7 @@
       IF (.NOT. skip_conv) convRWU_TO_RWU%val  = RWU%val * conv
     END IF
 
-    !write(out_unitp,*) 'conv',conv,skip_conv
+    !write(out_unit,*) 'conv',conv,skip_conv
 
   END FUNCTION convRWU_TO_RWU
 
@@ -646,7 +646,7 @@
         name_unit = Tab_conv_FOR_quantity(iq)%conv(iu)%unit
         CALL string_uppercase_TO_lowercase(name_unit)
 
-        !write(out_unitp,*) 'i,name_unit',i,name_unit,name_RWUunit,(name_RWUunit == name_unit)
+        !write(out_unit,*) 'i,name_unit',i,name_unit,name_RWUunit,(name_RWUunit == name_unit)
 
         IF (unit_loc == name_unit) EXIT
       END DO
@@ -675,10 +675,10 @@
 
     integer :: i,iq
 
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "======= Set up conversion factor ====="
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "======= Set up conversion factor ====="
 
     CALL ADD_RWU_TO_Tab_conv_FOR_quantity(REAL_WU(ONE,'au','l'),Work_unit=.TRUE.)
     CALL ADD_RWU_TO_Tab_conv_FOR_quantity(REAL_WU(ONE,'AU','l'))
@@ -691,166 +691,166 @@
     CALL Write_TabConvRWU_dim1(Tab_conv_FOR_quantity)
 
     DO iq=1,size(Tab_conv_FOR_quantity)
-      write(out_unitp,*) "======================================"
-      write(out_unitp,*) "======================================"
-      write(out_unitp,*) "======================================"
-      write(out_unitp,*) "======= ",Tab_conv_FOR_quantity(iq)%quantity," ========="
-      flush(out_unitp)
+      write(out_unit,*) "======================================"
+      write(out_unit,*) "======================================"
+      write(out_unit,*) "======================================"
+      write(out_unit,*) "======= ",Tab_conv_FOR_quantity(iq)%quantity," ========="
+      flush(out_unit)
 
       DO i=1,size(Tab_conv_FOR_quantity(iq)%conv)
 
         RWU1 = REAL_WU(ONE,Tab_conv_FOR_quantity(iq)%conv(i)%unit,Tab_conv_FOR_quantity(iq)%quantity)
 
-        write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
-        write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
-        write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
-        write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
-        write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
+        write(out_unit,*) 'test RWU (without conv): ',TO_string(RWU1)
+        write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
+        write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
+        write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
+        write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
         RWU2 = convRWU_TO_RWU(RWU1)
-        write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
+        write(out_unit,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
         RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-        write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
+        write(out_unit,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
         RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-        write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
+        write(out_unit,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
         Rval = convRWU_TO_R(RWU1)
-        write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
+        write(out_unit,*) 'test Rval (after conv, working unit default): ',Rval
         Rval = RWU1
-        write(out_unitp,*) 'test Rval (after conv, = default):           ',Rval
+        write(out_unit,*) 'test Rval (after conv, = default):           ',Rval
         Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-        write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
+        write(out_unit,*) 'test Rval (after conv, working unit)        : ',Rval
         Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-        write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
+        write(out_unit,*) 'test Rval (after conv, writing unit)        : ',Rval
 
-        write(out_unitp,*) "======================================"
-        flush(out_unitp)
+        write(out_unit,*) "======================================"
+        flush(out_unit)
       END DO
-      write(out_unitp,*) "======================================"
-      write(out_unitp,*) "======================================"
-      write(out_unitp,*) "======================================"
-      flush(out_unitp)
+      write(out_unit,*) "======================================"
+      write(out_unit,*) "======================================"
+      write(out_unit,*) "======================================"
+      flush(out_unit)
     END DO
 
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "======== test with a wrong unit ======"
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "======== test with a wrong unit ======"
 
     RWU1 = REAL_WU(ONE,'xx','E')
 
-    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (without conv): ',TO_string(RWU1)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
-    write(out_unitp,*) 'test Rval (after conv, = default):           ',Rval
+    write(out_unit,*) 'test Rval (after conv, = default):           ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
+    write(out_unit,*) 'test Rval (after conv, writing unit)        : ',Rval
 
-    write(out_unitp,*) "======================================"
-    flush(out_unitp)
+    write(out_unit,*) "======================================"
+    flush(out_unit)
 
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "======================================"
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "======================================"
 
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "======== test with a wrong quantity =="
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "======== test with a wrong quantity =="
 
     RWU1 = REAL_WU(ONE,'au','x')
 
-    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (without conv): ',TO_string(RWU1)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
-    write(out_unitp,*) 'test Rval (after conv, = default):            ',Rval
+    write(out_unit,*) 'test Rval (after conv, = default):            ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
+    write(out_unit,*) 'test Rval (after conv, writing unit)        : ',Rval
 
-    write(out_unitp,*) "======================================"
-    flush(out_unitp)
+    write(out_unit,*) "======================================"
+    flush(out_unit)
 
 
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "== test with a quantity with different case =="
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "== test with a quantity with different case =="
 
     RWU1 = REAL_WU(ONE,'au','e')
 
-    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (without conv): ',TO_string(RWU1)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
-    write(out_unitp,*) 'test Rval (after conv, = default):            ',Rval
+    write(out_unit,*) 'test Rval (after conv, = default):            ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test Rval (after conv, writing unit)        :',Rval
+    write(out_unit,*) 'test Rval (after conv, writing unit)        :',Rval
 
-    write(out_unitp,*) "======================================"
-    flush(out_unitp)
+    write(out_unit,*) "======================================"
+    flush(out_unit)
 
-    write(out_unitp,*) "======================================"
-    write(out_unitp,*) "===== test with with different case =="
+    write(out_unit,*) "======================================"
+    write(out_unit,*) "===== test with with different case =="
 
     RWU1 = REAL_WU(ONE,'ANGS','l')
 
-    write(out_unitp,*) 'test RWU (without conv): ',TO_string(RWU1)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (without conv): ',TO_string(RWU1)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (working unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.TRUE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.FALSE.,WorkingUnit=.FALSE.)
+    write(out_unit,*) 'test RWU (writing unit): ',RWU_Write(RWU1,WithUnit=.TRUE.,WorkingUnit=.FALSE.)
     RWU2 = convRWU_TO_RWU(RWU1)
-    write(out_unitp,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit default) : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, working unit)         : ',TO_string(RWU2)
     RWU2 = convRWU_TO_RWU(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
+    write(out_unit,*) 'test RWU (after conv, writing unit)         : ',TO_string(RWU2)
 
     Rval = convRWU_TO_R(RWU1)
-    write(out_unitp,*) 'test Rval (after conv, working unit default): ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit default): ',Rval
     Rval = RWU1
-    write(out_unitp,*) 'test Rval (after conv, = default):            ',Rval
+    write(out_unit,*) 'test Rval (after conv, = default):            ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.TRUE.)
-    write(out_unitp,*) 'test Rval (after conv, working unit)        : ',Rval
+    write(out_unit,*) 'test Rval (after conv, working unit)        : ',Rval
     Rval = convRWU_TO_R(RWU1,WorkingUnit=.FALSE.)
-    write(out_unitp,*) 'test Rval (after conv, writing unit)        : ',Rval
+    write(out_unit,*) 'test Rval (after conv, writing unit)        : ',Rval
 
-    write(out_unitp,*) "======================================"
-    flush(out_unitp)
+    write(out_unit,*) "======================================"
+    flush(out_unit)
 
     CALL dealloc_TabConvRWU_dim1(Tab_conv_FOR_quantity)
 

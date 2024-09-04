@@ -119,7 +119,7 @@ $(info ************************************************************************)
 VPATH = SRC TESTS
 #============================================================================
 #Physical constants
-PhysConst_SRCFILES = sub_module_RealWithUnit.f90 sub_module_Atom.f90 sub_module_constant.f90
+PhysConst_SRCFILES = Util_m.f90 sub_module_RealWithUnit.f90 sub_module_Atom.f90 sub_module_constant.f90
 PhysConstEXE       = PhysConst.exe
 PhysConstMAIN      = PhysicalConstants_Main
 #============================================================================
