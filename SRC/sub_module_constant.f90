@@ -31,7 +31,7 @@
 !> \author David Lauvergnat
 !> \date 29/11/2018
 MODULE mod_Constant
-  USE QDUtil_m, out_unitp => out_unit, in_unitp => in_unit
+  USE QDUtil_m
 
   use mod_Atom, only: table_atom, dealloc_table_at, get_mass_Tnum,        &
                      construct_table_at_NIST2012, construct_table_at_NIST2018,&
@@ -224,7 +224,7 @@ MODULE mod_Constant
   !logical, parameter :: debug = .TRUE.
 !-----------------------------------------------------------------
   IF (debug) THEN
-    write(out_unitp,*) 'BEGINNING ',name_sub
+    write(out_unit,*) 'BEGINNING ',name_sub
   END IF
 !-----------------------------------------------------------------
   const_phys%constant_done = .TRUE.
@@ -278,7 +278,7 @@ MODULE mod_Constant
                                mass_version_loc,version_loc)
   END IF
 
-  write(out_unitp,*) 'PhysCte_path: ',PhysCte_path
+  write(out_unit,*) 'PhysCte_path: ',PhysCte_path
 
 
   CALL string_uppercase_TO_lowercase(version_loc,lower=.FALSE.) ! conversion in capital letters
@@ -308,23 +308,23 @@ MODULE mod_Constant
 
 
   IF (print_level > 1)                                              &
-      write(out_unitp,*) 'c,mhu0,epsi0,G,h,hb,e,me,mp,alpha,Na,R,k',&
+      write(out_unit,*) 'c,mhu0,epsi0,G,h,hb,e,me,mp,alpha,Na,R,k',&
                           c,mhu0,epsi0,G,h,hb,e,me,mp,alpha,Na,R,k
 
 !   Atomic constants
 
 !   Reduced mass of the Hydrogen atom
     mhu = me*(mp/(mp+me))
-    IF (print_level > 0) write(out_unitp,*) 'mhu (g)',mhu
+    IF (print_level > 0) write(out_unit,*) 'mhu (g)',mhu
 !   Bohr radius (in m)
     a0 = (hb/e)**2 /me * FOUR*pi*epsi0
-    IF (print_level > 0) write(out_unitp,*) 'a0 (m)',a0
+    IF (print_level > 0) write(out_unit,*) 'a0 (m)',a0
 !   Atomic energy unit (hartree) (en J)
     Eh = (e*e/a0)/(FOUR*pi*epsi0)
-    IF (print_level > 0) write(out_unitp,*) 'Eh (J)',Eh
+    IF (print_level > 0) write(out_unit,*) 'Eh (J)',Eh
 !   temps en unite atomique (en s)
     Ta = hb/Eh
-    IF (print_level > 0) write(out_unitp,*) 'Ta (s)',Ta
+    IF (print_level > 0) write(out_unit,*) 'Ta (s)',Ta
 !   Mass conversion factor: kg.mol-1 => au
     IF (inv_Name < ZERO) inv_Name = ONE/(Na*me)
 
@@ -359,10 +359,10 @@ MODULE mod_Constant
     convIQif = (FOUR*pi**5*Na)/(FOUR*pi*epsi0*FIVE*h*c) * (Eh/(c*h))**3 *  (e*a0*a0)**2
 
 !   Convertion for the dipole moment (Debye TO au)
-    IF (print_level > 0) write(out_unitp,*) 'Debye TO C.m',TEN/(HUNDRED*c)/TEN**20
+    IF (print_level > 0) write(out_unit,*) 'Debye TO C.m',TEN/(HUNDRED*c)/TEN**20
 
     convDebyeTOau = TEN/(HUNDRED*c)/TEN**20 / (e*a0)
-    IF (print_level > 0) write(out_unitp,*) 'Debye TO au',convDebyeTOau
+    IF (print_level > 0) write(out_unit,*) 'Debye TO au',convDebyeTOau
 
     conv_auTOCm = e*a0
 !--------------------------------------------------------------
@@ -388,16 +388,16 @@ MODULE mod_Constant
   CALL string_uppercase_TO_lowercase(mass_version_loc,lower=.FALSE.) ! conversion in capital letters
   SELECT CASE (mass_version_loc)
   CASE ('NIST2012')
-    write(out_unitp,*) 'MASSES, version: ',mass_version_loc
+    write(out_unit,*) 'MASSES, version: ',mass_version_loc
     CALL construct_table_at_NIST2012(const_phys%mendeleev,gPmolTOmass,mass_unit,PhysCte_path,iprint=iprint_loc)
   CASE ('NIST2018')
-    write(out_unitp,*) 'MASSES, version: ',mass_version_loc
+    write(out_unit,*) 'MASSES, version: ',mass_version_loc
     CALL construct_table_at_NIST2018(const_phys%mendeleev,gPmolTOmass,mass_unit,PhysCte_path,iprint=iprint_loc)
   CASE ('HANDBOOK70ED','HANDBOOK')
-    write(out_unitp,*) 'MASSES, version: ','HandBook70ed'
+    write(out_unit,*) 'MASSES, version: ','HandBook70ed'
     CALL construct_table_at_HandBook70ed(const_phys%mendeleev,gPmolTOmass,mass_unit)
   CASE Default
-    write(out_unitp,*) 'MASSES, version: ',mass_version_loc
+    write(out_unit,*) 'MASSES, version: ',mass_version_loc
     CALL construct_table_at_NIST2012(const_phys%mendeleev,gPmolTOmass,mass_unit,PhysCte_path,iprint=iprint_loc)
   END SELECT
 
@@ -417,11 +417,11 @@ MODULE mod_Constant
     const_phys%auTOenergy = get_Conv_au_TO_unit('E','cm-1',err_unit=err_unit)
     const_phys%ene_unit   = 'cm-1'
     IF (err_unit /= 0) THEN
-      write(out_unitp,*) 'ERROR in ',name_sub
-      write(out_unitp,*) ' Problem to get the conversion factor for "cm-1"'
-      write(out_unitp,*) '  It should never append.'
-      write(out_unitp,*) '  Check the fortran!!'
-      write(out_unitp,*) 'List of available units:'
+      write(out_unit,*) 'ERROR in ',name_sub
+      write(out_unit,*) ' Problem to get the conversion factor for "cm-1"'
+      write(out_unit,*) '  It should never append.'
+      write(out_unit,*) '  Check the fortran!!'
+      write(out_unit,*) 'List of available units:'
       CALL Write_TabConvRWU_dim1(Tab_conv_FOR_quantity)
       STOP
     END IF
@@ -435,12 +435,12 @@ MODULE mod_Constant
       const_phys%ene_unit   = trim(adjustl(ene_unit))
       IF (err_unit /= 0) THEN
         IF(iprint_loc == 0) THEN
-          write(out_unitp,*) 'ERROR in ',name_sub
-          write(out_unitp,*) ' Problem with "ene_unit" and/or "auTOenergy"'
-          write(out_unitp,*) '   energy unit: ',ene_unit
-          write(out_unitp,*) '   auTOenergy:  ',auTOenergy
-          IF (auTOenergy < ZERO) write(out_unitp,*) ' The value of "auTOenergy" is wrong'
-          write(out_unitp,*) 'List of available units:'
+          write(out_unit,*) 'ERROR in ',name_sub
+          write(out_unit,*) ' Problem with "ene_unit" and/or "auTOenergy"'
+          write(out_unit,*) '   energy unit: ',ene_unit
+          write(out_unit,*) '   auTOenergy:  ',auTOenergy
+          IF (auTOenergy < ZERO) write(out_unit,*) ' The value of "auTOenergy" is wrong'
+          write(out_unit,*) 'List of available units:'
         ENDIF
         CALL Write_TabConvRWU_dim1(Tab_conv_FOR_quantity)
         STOP 'ERROR in :Problem with "ene_unit" and/or "auTOenergy"'
@@ -504,7 +504,7 @@ MODULE mod_Constant
        Write_unit=.TRUE.,Write_Warning=Write_Warning)
 
   IF (print_level > 1 .AND. iprint_loc == 0) THEN
-    write(out_unitp,*) 'List of available units:'
+    write(out_unit,*) 'List of available units:'
     CALL Write_TabConvRWU_dim1(Tab_conv_FOR_quantity)
   END IF
 
@@ -551,33 +551,33 @@ MODULE mod_Constant
 
 !-- Write some constantes ------------------------------------
   IF(iprint_loc == 0) THEN
-      write(out_unitp,*)  ' Writing energy unit : ',RWU_WriteUnit('E',WorkingUnit=.FALSE.)
-      write(out_unitp,*)  ' Working energy unit : ',RWU_WriteUnit('E',WorkingUnit=.TRUE.)
-      write(out_unitp,21) ' auTOenergy      = ',const_phys%auTOenergy
-      write(out_unitp,21) ' auTOcm_inv      = ',const_phys%auTOcm_inv
-      write(out_unitp,21) ' auTOeV          = ',const_phys%auTOeV
-      write(out_unitp,21) ' auTOGHz         = ',const_phys%auTOGHz
-      write(out_unitp,21) ' auTOkcalmol_inv = ',const_phys%auTOkcalmol_inv
-      write(out_unitp,21) ' auTOkJmol_inv   = ',const_phys%auTOkJmol_inv
+      write(out_unit,*)  ' Writing energy unit : ',RWU_WriteUnit('E',WorkingUnit=.FALSE.)
+      write(out_unit,*)  ' Working energy unit : ',RWU_WriteUnit('E',WorkingUnit=.TRUE.)
+      write(out_unit,21) ' auTOenergy      = ',const_phys%auTOenergy
+      write(out_unit,21) ' auTOcm_inv      = ',const_phys%auTOcm_inv
+      write(out_unit,21) ' auTOeV          = ',const_phys%auTOeV
+      write(out_unit,21) ' auTOGHz         = ',const_phys%auTOGHz
+      write(out_unit,21) ' auTOkcalmol_inv = ',const_phys%auTOkcalmol_inv
+      write(out_unit,21) ' auTOkJmol_inv   = ',const_phys%auTOkJmol_inv
 
     IF (print_level > 0) THEN
-      write(out_unitp,*)  ' pi              = ',const_phys%pi
-      write(out_unitp,*)  ' cos(pi)         = ',cos(const_phys%pi)
-      write(out_unitp,11) ' a0 (m-1)        = ',const_phys%a0
-      write(out_unitp,11) ' a0 (Angs)       = ',const_phys%a0*TEN**10
-      write(out_unitp,11) ' Eh (J)          = ',const_phys%Eh
-      write(out_unitp,11) ' Ta (s)          = ',const_phys%Ta
+      write(out_unit,*)  ' pi              = ',const_phys%pi
+      write(out_unit,*)  ' cos(pi)         = ',cos(const_phys%pi)
+      write(out_unit,11) ' a0 (m-1)        = ',const_phys%a0
+      write(out_unit,11) ' a0 (Angs)       = ',const_phys%a0*TEN**10
+      write(out_unit,11) ' Eh (J)          = ',const_phys%Eh
+      write(out_unit,11) ' Ta (s)          = ',const_phys%Ta
     END IF
-      write(out_unitp,21) ' Ta (fs)         = ',const_phys%Ta*TEN**15
+      write(out_unit,21) ' Ta (fs)         = ',const_phys%Ta*TEN**15
 
     IF (print_level > 0) THEN
-      write(out_unitp,21) ' inv_Name        = ',const_phys%inv_Name
-      write(out_unitp,11) ' E0 (V cm-1)     = ',const_phys%E0
-      write(out_unitp,11) ' I0 (W cm-2)     = ',const_phys%I0
-      write(out_unitp,11) ' convAif         = ',const_phys%convAif
-      write(out_unitp,11) ' convIDif        = ',const_phys%convIDif
-      write(out_unitp,11) ' convIQif        = ',const_phys%convIQif
-      write(out_unitp,11) ' convDebyeTOau   = ',convDebyeTOau
+      write(out_unit,21) ' inv_Name        = ',const_phys%inv_Name
+      write(out_unit,11) ' E0 (V cm-1)     = ',const_phys%E0
+      write(out_unit,11) ' I0 (W cm-2)     = ',const_phys%I0
+      write(out_unit,11) ' convAif         = ',const_phys%convAif
+      write(out_unit,11) ' convIDif        = ',const_phys%convIDif
+      write(out_unit,11) ' convIQif        = ',const_phys%convIQif
+      write(out_unit,11) ' convDebyeTOau   = ',convDebyeTOau
     END IF
   ENDIF
 
@@ -585,7 +585,7 @@ MODULE mod_Constant
 21 format (a,f18.6)
 
   IF (debug) THEN
-    write(out_unitp,*) 'END ',name_sub
+    write(out_unit,*) 'END ',name_sub
   END IF
 !-----------------------------------------------------------------
   END SUBROUTINE sub_constantes
@@ -623,7 +623,7 @@ MODULE mod_Constant
   !logical, parameter :: debug = .TRUE.
 !-----------------------------------------------------------------
   IF (debug) THEN
-    write(out_unitp,*) 'BEGINNING ',name_sub
+    write(out_unit,*) 'BEGINNING ',name_sub
   END IF
 !-----------------------------------------------------------------
 
@@ -644,20 +644,20 @@ MODULE mod_Constant
   PhysConst_path = ""
   EVRT_path      = ""
 
-  read(in_unitp,constantes,IOSTAT=err_read)
+  read(in_unit,constantes,IOSTAT=err_read)
   IF (err_read < 0) THEN
-    write(out_unitp,*) ' ERROR in ',name_sub
-    write(out_unitp,*) ' End-of-file or End-of-record'
-    write(out_unitp,*) ' The namelist "constantes" is probably absent'
-    write(out_unitp,*) ' check your data!'
-    write(out_unitp,*) ' ERROR in ',name_sub
+    write(out_unit,*) ' ERROR in ',name_sub
+    write(out_unit,*) ' End-of-file or End-of-record'
+    write(out_unit,*) ' The namelist "constantes" is probably absent'
+    write(out_unit,*) ' check your data!'
+    write(out_unit,*) ' ERROR in ',name_sub
     STOP ' ERROR in sub_ReadNMLconstantes: The namelist "constantes" is probably absent'
   ELSE IF (err_read > 0) THEN
-    write(out_unitp,*) ' ERROR in ',name_sub
-    write(out_unitp,*) ' Some parameter name of the namelist "constantes" are probaly wrong'
-    write(out_unitp,*) ' check your data!'
-    write(out_unitp,constantes)
-    write(out_unitp,*) ' ERROR in ',name_sub
+    write(out_unit,*) ' ERROR in ',name_sub
+    write(out_unit,*) ' Some parameter name of the namelist "constantes" are probaly wrong'
+    write(out_unit,*) ' check your data!'
+    write(out_unit,constantes)
+    write(out_unit,*) ' ERROR in ',name_sub
     STOP ' ERROR in sub_ReadNMLconstantes: Some parameter name of the namelist "constantes" are probaly wrong'
   END IF
 
@@ -675,9 +675,9 @@ MODULE mod_Constant
   time_unit1    = time_unit
 
   IF (len_trim(EVRT_path) > 0 .AND. len_trim(PhysConst_path) > 0) THEN
-    write(out_unitp,*) 'ERROR in ',name_sub
-    write(out_unitp,*) 'Both EVRT_path and PhysConst_path are defined in the namelist constantes'
-    write(out_unitp,*) 'Define ONLY PhysConst_path.'
+    write(out_unit,*) 'ERROR in ',name_sub
+    write(out_unit,*) 'Both EVRT_path and PhysConst_path are defined in the namelist constantes'
+    write(out_unit,*) 'Define ONLY PhysConst_path.'
     STOP ' ERROR in sub_ReadNMLconstantes: Both EVRT_path and PhysConst_path are defined'
   ELSE IF (len_trim(EVRT_path) > 0) THEN
     PhysCte_path = trim(adjustl(EVRT_path))
@@ -688,7 +688,7 @@ MODULE mod_Constant
   END IF
 
   IF (debug) THEN
-    write(out_unitp,*) 'END ',name_sub
+    write(out_unit,*) 'END ',name_sub
   END IF
 
 END SUBROUTINE sub_ReadNMLconstantes
@@ -715,7 +715,7 @@ END SUBROUTINE sub_ReadNMLconstantes
 
   character (len=*), parameter :: version='CODATA 2018'
   !---------------------------------------------------------------------
-  write(out_unitp,*) 'PHYSICAL CONSTANTS, version: ',version
+  write(out_unit,*) 'PHYSICAL CONSTANTS, version: ',version
   !---------------------------------------------------------------------
 
   !------ Physical constant of CODATA2018 ---------------------------
@@ -777,7 +777,7 @@ END SUBROUTINE constantes_CODATA2018
 
   character (len=*), parameter :: version='CODATA 2014'
   !---------------------------------------------------------------------
-  write(out_unitp,*) 'PHYSICAL CONSTANTS, version: ',version
+  write(out_unit,*) 'PHYSICAL CONSTANTS, version: ',version
   !---------------------------------------------------------------------
 
   !------ Physical constant of CODATA2014 ---------------------------
@@ -839,7 +839,7 @@ END SUBROUTINE constantes_CODATA2018
 
   character (len=*), parameter :: version='CODATA 2006'
   !---------------------------------------------------------------------
-  write(out_unitp,*) 'PHYSICAL CONSTANTS, version: ',version
+  write(out_unit,*) 'PHYSICAL CONSTANTS, version: ',version
   !---------------------------------------------------------------------
 
   !------ Physical constant of CODATA2006 ---------------------------
@@ -886,7 +886,7 @@ END SUBROUTINE constantes_CODATA2018
 
   character (len=*), parameter :: version='HandBook70ed'
   !---------------------------------------------------------------------
-  write(out_unitp,*) 'PHYSICAL CONSTANTS, version: ',version
+  write(out_unit,*) 'PHYSICAL CONSTANTS, version: ',version
   !---------------------------------------------------------------------
 
   !------ affectation des constantes avec ---------------------------
@@ -895,30 +895,30 @@ END SUBROUTINE constantes_CODATA2018
 
   ! vitesse de la lumiere (exacte) (en m s-1)
   c = 299792458._Rkind
-  write(out_unitp,*) 'c = ',c
+  write(out_unit,*) 'c = ',c
   ! permeabilite du vide (exacte) (en N A-2)
   mhu0 = pi*4.e-7_Rkind
-  write(out_unitp,*) 'mhu0 = ',mhu0
+  write(out_unit,*) 'mhu0 = ',mhu0
   ! permitivite du vide (exacte) (en F m-1)
   G = 6.6725985e-11_Rkind
   ! constante de Planck (h et hb) (en J s)
   h = 6.626075540e-34_Rkind
-  write(out_unitp,*) 'h = ',h
+  write(out_unit,*) 'h = ',h
   ! charge de l electron (en C)
   e = 1.6021773349e-19_Rkind
-  write(out_unitp,*) 'e = ',e
+  write(out_unit,*) 'e = ',e
   ! masse de l electron (en kg)
   me = 9.109389754e-31_Rkind
 
-  write(out_unitp,*) 'me = ',me
+  write(out_unit,*) 'me = ',me
   ! masse du proton (en kg)
   mp = 1.672623110e-27_Rkind
   ! constante d'Avogadro (mol-1)
   Na = 6.022136736e23_Rkind
-  write(out_unitp,*) 'Na = ',Na
+  write(out_unit,*) 'Na = ',Na
   ! constante des gaz parfait R (J mol-1 K-1)
   R = 8.31451070_Rkind
-  write(out_unitp,*) 'R = ',R
+  write(out_unit,*) 'R = ',R
 
   END SUBROUTINE constantes_HandBook70ed
 
@@ -939,7 +939,7 @@ END SUBROUTINE constantes_CODATA2018
 
   character (len=*), parameter :: version='constantes_HandBook70ed_2001'
   !---------------------------------------------------------------------
-  write(out_unitp,*) 'PHYSICAL CONSTANTS, version: ',version
+  write(out_unit,*) 'PHYSICAL CONSTANTS, version: ',version
   !---------------------------------------------------------------------
 
   !------ affectation des constantes avec ---------------------------
@@ -949,34 +949,34 @@ END SUBROUTINE constantes_CODATA2018
 
   ! vitesse de la lumiere (exacte) (en m s-1)
   c = 299792458._Rkind
-  write(out_unitp,*) 'c = ',c
+  write(out_unit,*) 'c = ',c
   ! permeabilite du vide (exacte) (en N A-2)
   mhu0 = pi*4.e-7_Rkind
-  write(out_unitp,*) 'mhu0 = ',mhu0
+  write(out_unit,*) 'mhu0 = ',mhu0
   ! permitivite du vide (exacte) (en F m-1)
   G = 6.6725985e-11_Rkind
   ! constante de Planck (h et hb) (en J s)
   h = 6.626075540e-34_Rkind
-  write(out_unitp,*) 'h = ',h
+  write(out_unit,*) 'h = ',h
   ! charge de l electron (en C)
   !e = 1.6021773349e-19_Rkind
   e = 1.6021773349e-19
-  write(out_unitp,*) 'e = ',e
+  write(out_unit,*) 'e = ',e
   ! masse de l electron (en kg)
   !me = 9.109389754e-31_Rkind
   me = 9.109389754e-31
 
-  write(out_unitp,*) 'me = ',me
+  write(out_unit,*) 'me = ',me
   ! masse du proton (en kg)
   mp = 1.672623110e-27_Rkind
   mp = 1.672623110e-27
 
   ! constante d'Avogadro (mol-1)
   Na = 6.022136736e23_Rkind
-  write(out_unitp,*) 'Na = ',Na
+  write(out_unit,*) 'Na = ',Na
   ! constante des gaz parfait R (J mol-1 K-1)
   R = 8.31451070_Rkind
-  write(out_unitp,*) 'R = ',R
+  write(out_unit,*) 'R = ',R
 
  END SUBROUTINE constantes_HandBook70ed_2001
  END MODULE mod_constant

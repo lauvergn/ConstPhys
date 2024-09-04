@@ -124,7 +124,7 @@
 !!     mass = get_mass_Tnum(const_phys%mendeleev,Z=6,A=12)
 
   PROGRAM PhysicalConstants
-    USE QDUtil_m,  out_unitp => out_unit, in_unitp => in_unit
+    USE QDUtil_m
     USE mod_constant
     USE mod_RealWithUnit
     IMPLICIT NONE
@@ -141,139 +141,139 @@
 
     !=======================================================================
     !=======================================================================
-    write(out_unitp,*) 'BEGINNING ',name_sub
+    write(out_unit,*) 'BEGINNING ',name_sub
     CALL set_print_level(0)
 
-    write(out_unitp,*) '==========================================='
-    write(out_unitp,*) '= Module test: RealWithUnit(RWU) =========='
+    write(out_unit,*) '==========================================='
+    write(out_unit,*) '= Module test: RealWithUnit(RWU) =========='
     CALL Test_RWU()
-    write(out_unitp,*) '==========================================='
+    write(out_unit,*) '==========================================='
 
 
-    write(out_unitp,*) '==========================================='
-    write(out_unitp,*) '= Usefull conversion factors or constants ='
+    write(out_unit,*) '==========================================='
+    write(out_unit,*) '= Usefull conversion factors or constants ='
     CALL sub_constantes(const_phys,Read_Namelist=.TRUE.)
 
  11 format (a,e17.10)
  21 format (a,f18.6)
-    write(out_unitp,*)
-    write(out_unitp,*) 'pi =                ',const_phys%pi
-    write(out_unitp,*) 'cos(pi) =           ',cos(const_phys%pi)
-    write(out_unitp,*)
-    write(out_unitp,11) 'au => m            ',const_phys%a0
-    write(out_unitp,11) 'au => Angstrom     ',const_phys%a0 * TEN**10
-    write(out_unitp,*)
+    write(out_unit,*)
+    write(out_unit,*) 'pi =                ',const_phys%pi
+    write(out_unit,*) 'cos(pi) =           ',cos(const_phys%pi)
+    write(out_unit,*)
+    write(out_unit,11) 'au => m            ',const_phys%a0
+    write(out_unit,11) 'au => Angstrom     ',const_phys%a0 * TEN**10
+    write(out_unit,*)
 
-    write(out_unitp,11) ' au => s           ',const_phys%Ta
-    write(out_unitp,21) ' au => fs          ',const_phys%Ta*TEN**15
-    write(out_unitp,*)
+    write(out_unit,11) ' au => s           ',const_phys%Ta
+    write(out_unit,21) ' au => fs          ',const_phys%Ta*TEN**15
+    write(out_unit,*)
 
-    write(out_unitp,11) ' au => J           ',const_phys%Eh
-    write(out_unitp,21) ' au => cm-1        ',const_phys%auTOcm_inv
-    write(out_unitp,21) ' au => eV          ',const_phys%auTOeV
-    write(out_unitp,*)
+    write(out_unit,11) ' au => J           ',const_phys%Eh
+    write(out_unit,21) ' au => cm-1        ',const_phys%auTOcm_inv
+    write(out_unit,21) ' au => eV          ',const_phys%auTOeV
+    write(out_unit,*)
 
-    write(out_unitp,21) ' g.mol-1 => au     ',const_phys%inv_Name/TEN**3
-    write(out_unitp,11) ' Debye => au       ',const_phys%convDebyeTOau
-    write(out_unitp,*)
+    write(out_unit,21) ' g.mol-1 => au     ',const_phys%inv_Name/TEN**3
+    write(out_unit,11) ' Debye => au       ',const_phys%convDebyeTOau
+    write(out_unit,*)
 
-    write(out_unitp,11) ' au => V.cm-1 (E0) ',const_phys%E0
-    write(out_unitp,11) ' au => W.cm-2 (I0) ',const_phys%I0
-    write(out_unitp,*)
+    write(out_unit,11) ' au => V.cm-1 (E0) ',const_phys%E0
+    write(out_unit,11) ' au => W.cm-2 (I0) ',const_phys%I0
+    write(out_unit,*)
 
-    write(out_unitp,*) '==========================================='
-    flush(out_unitp)
+    write(out_unit,*) '==========================================='
+    flush(out_unit)
 
-    write(out_unitp,*) '==========================================='
-    write(out_unitp,*) '====== TEST to get masses ================='
-    flush(out_unitp)
+    write(out_unit,*) '==========================================='
+    write(out_unit,*) '====== TEST to get masses ================='
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='X')
-    write(out_unitp,*) 'mass of X in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of X in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='100.')
-    write(out_unitp,*) 'mass of "100." in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of "100." in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='H')
-    write(out_unitp,*) 'mass of H in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of H in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='1_2')
-    write(out_unitp,*) 'mass of "1_2" in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of "1_2" in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='D')
-    write(out_unitp,*) 'mass of D in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of D in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='T')
-    write(out_unitp,*) 'mass of T in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of T in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='1_4',err_mass=err_mass)
-    write(out_unitp,*) 'mass of "1_4" in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of "1_4" in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='He')
-    write(out_unitp,*) 'mass of He in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of He in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='HE')
-    write(out_unitp,*) 'mass of HE in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of HE in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     mass = get_mass_Tnum(const_phys%mendeleev,name='he')
-    write(out_unitp,*) 'mass of he in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of he in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     Z=-1
     A=-1
     mass = get_mass_Tnum(const_phys%mendeleev,Z,A,name='He')
-    write(out_unitp,*) 'mass of He in au',mass,' and then Z and A',Z,A
-    flush(out_unitp)
+    write(out_unit,*) 'mass of He in au',mass,' and then Z and A',Z,A
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     Z=6
     A=-1
     mass = get_mass_Tnum(const_phys%mendeleev,Z,A)
-    write(out_unitp,*) 'mass of Z=6 in au',mass,' and then A',A
-    flush(out_unitp)
+    write(out_unit,*) 'mass of Z=6 in au',mass,' and then A',A
+    flush(out_unit)
 
-    write(out_unitp,*) ' -------------------------------------- '
+    write(out_unit,*) ' -------------------------------------- '
     Z=6
     A=13
     mass = get_mass_Tnum(const_phys%mendeleev,Z,A,err_mass=err_mass)
-    write(out_unitp,*) 'mass of Z=6,A=13 in au',mass
-    flush(out_unitp)
+    write(out_unit,*) 'mass of Z=6,A=13 in au',mass
+    flush(out_unit)
 
-    write(out_unitp,*) '==========================================='
+    write(out_unit,*) '==========================================='
     DO
-      read(in_unitp,*,IOSTAT=err_read) mass_name
+      read(in_unit,*,IOSTAT=err_read) mass_name
       IF (err_read /= 0) EXIT
       mass = get_mass_Tnum(const_phys%mendeleev,name=mass_name,err_mass=err_mass)
-      write(out_unitp,*) 'mass of "',trim(adjustl(mass_name)),'" in au',mass
+      write(out_unit,*) 'mass of "',trim(adjustl(mass_name)),'" in au',mass
 
-      write(out_unitp,*) ' -------------------------------------- '
-      flush(out_unitp)
+      write(out_unit,*) ' -------------------------------------- '
+      flush(out_unit)
 
     END DO
 
 
-    write(out_unitp,*) '==========================================='
+    write(out_unit,*) '==========================================='
 
-    write(out_unitp,*) 'END ',name_sub
+    write(out_unit,*) 'END ',name_sub
 
   END PROGRAM PhysicalConstants
