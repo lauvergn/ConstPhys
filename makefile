@@ -195,11 +195,6 @@ ifeq ($(DEGUB),T)
   $(info ***********OBJ files:       $(OBJ))
 endif
 #===============================================
-#============= Main programs: tests + example ==
-#
-.PHONY: all
-all: lib $(TESTEXE)
-#===============================================
 #================ unitary tests ================
 #===============================================
 SRCTESTFILES := $(notdir $(shell ls $(TESTS_DIR)/*.f90))
@@ -209,10 +204,19 @@ TESTEXE      := $(SRCTESTFILES:.f90=.x)
 ifeq ($(DDEBUG),t)
   $(info ***********SRCTESTFILES:    $(SRCTESTFILES))
   $(info ***********OBJ test files:  $(OBJTEST))
-  $(info ***********app test exe:    $(TESTEXE))
+  $(info ***********test exe:        $(TESTEXE))
   $(info ***********************************************************************)
 endif
+#===============================================
+#============= Main programs: tests + example ==
+#===============================================
 #
+.PHONY: all
+all: lib $(TESTEXE)
+#
+#===============================================
+#================ unitary tests ================
+#===============================================
 .PHONY: ut
 ut: $(TESTEXE)
 	@echo "---------------------------------------"
